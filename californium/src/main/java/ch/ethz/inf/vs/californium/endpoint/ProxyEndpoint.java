@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012, Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the Institute nor the names of its contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -25,7 +25,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * This file is part of the Californium (Cf) CoAP framework.
  ******************************************************************************/
 
@@ -54,9 +54,9 @@ import ch.ethz.inf.vs.californium.util.Properties;
 /**
  * The class represent the container of the resources and the layers used by the
  * proxy.
- * 
+ *
  * @author Francesco Corazza
- * 
+ *
  */
 public class ProxyEndpoint extends LocalEndpoint {
 
@@ -73,7 +73,7 @@ public class ProxyEndpoint extends LocalEndpoint {
 
 	/**
 	 * Instantiates a new proxy endpoint from the default ports.
-	 * 
+	 *
 	 * @throws SocketException
 	 *             the socket exception
 	 */
@@ -83,7 +83,7 @@ public class ProxyEndpoint extends LocalEndpoint {
 
 	/**
 	 * Instantiates a new proxy endpoint.
-	 * 
+	 *
 	 * @param udpPort
 	 *            the udp port
 	 * @param httpPort
@@ -97,7 +97,7 @@ public class ProxyEndpoint extends LocalEndpoint {
 
 	/**
 	 * Instantiates a new proxy endpoint.
-	 * 
+	 *
 	 * @param udpPort
 	 *            the udp port
 	 * @param httpPort
@@ -134,7 +134,7 @@ public class ProxyEndpoint extends LocalEndpoint {
 
 	/**
 	 * Gets the port.
-	 * 
+	 *
 	 * @param isHttpPort
 	 *            the is http port
 	 * @return the port
@@ -192,7 +192,7 @@ public class ProxyEndpoint extends LocalEndpoint {
 
 	/**
 	 * Manage proxy uri request.
-	 * 
+	 *
 	 * @param request
 	 *            the request
 	 * @throws URISyntaxException
@@ -259,4 +259,9 @@ public class ProxyEndpoint extends LocalEndpoint {
 			cacheResource.cacheResponse(response);
 		}
 	}
+
+  @Override
+  protected void destroyCommunicator() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012, Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the Institute nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -25,7 +25,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * This file is part of the Californium (Cf) CoAP framework.
  ******************************************************************************/
 
@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import ch.ethz.inf.vs.californium.coap.EndpointAddress;
 import ch.ethz.inf.vs.californium.coap.Message;
 import ch.ethz.inf.vs.californium.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * The class UDPLayer exchanges CoAP messages with remote endpoints using UDP
@@ -51,7 +52,7 @@ import ch.ethz.inf.vs.californium.util.Properties;
  * The UDPLayer is the base layer of the stack, sub-classing
  * {@link AbstractLayer}. Any {@link UpperLayer} can be stacked on top, using a
  * {@link ch.ethz.inf.vs.californium.coap.Communicator} as stack builder.
- * 
+ *
  * @author Dominique Im Obersteg, Daniel Pauli, and Matthias Kovatsch
  */
 public class UDPLayer extends AbstractLayer {
@@ -85,7 +86,7 @@ public class UDPLayer extends AbstractLayer {
 
 	/**
 	 * Constructor for a new UDP layer.
-	 * 
+	 *
 	 * @param port
 	 *            The local UDP port to listen for incoming messages
 	 * @param daemon
@@ -103,6 +104,12 @@ public class UDPLayer extends AbstractLayer {
 		receiverThread.start();
 
 	}
+
+        public void stop(){
+                LOG.info("!!!!!!!!!!!!!!!!!!!!!!! STOPPING UDP SOCKET");
+                receiverThread.cancel();
+                socket.close();
+        }
 
 	public int getPort() {
 		return socket.getLocalPort();
@@ -141,7 +148,7 @@ public class UDPLayer extends AbstractLayer {
 
 	/**
 	 * Decides if the listener thread persists after the main thread terminates.
-	 * 
+	 *
 	 * @param on
 	 *            True if the listener thread should stay alive after the main
 	 *            thread terminates. This is useful for e.g. server applications
@@ -154,7 +161,7 @@ public class UDPLayer extends AbstractLayer {
 	// ////////////////////////////////////////////////////////////////////
 
 	private void datagramReceived(DatagramPacket datagram) {
-		
+
 
 		if (datagram.getLength() > 0) {
 
@@ -263,14 +270,21 @@ public class UDPLayer extends AbstractLayer {
 
 	class ReceiverThread extends Thread {
 
+                volatile boolean cancel = false;
+
 		public ReceiverThread() {
 			super("ReceiverThread");
 		}
 
+                public void cancel(){
+                  cancel = true;
+                  this.interrupt();
+                }
+
 		@Override
 		public void run() {
 			// always listen for incoming datagrams
-			while (true) {
+			while (!cancel) {
 
 				// allocate buffer
 				// +1 to check for > RX_BUFFER_SIZE
@@ -281,7 +295,7 @@ public class UDPLayer extends AbstractLayer {
 
 				// receive datagram
 				try {
-					socket.receive(datagram);
+					socket.receive(datagram);//block!
 				} catch (IOException e) {
 					LOG.severe("Could not receive datagram: " + e.getMessage());
 					e.printStackTrace();
@@ -290,7 +304,8 @@ public class UDPLayer extends AbstractLayer {
 
 				// TODO: Dispatch to worker thread
 				datagramReceived(datagram);
-			}
+                        }
+                        LOG.info("!!!!!!!!!!!!!!!!! UDP SOCKET STOPPED");
 		}
 	}
 }

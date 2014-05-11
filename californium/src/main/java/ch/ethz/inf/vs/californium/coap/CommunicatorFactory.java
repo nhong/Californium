@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012, Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the Institute nor the names of its contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -25,7 +25,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * This file is part of the Californium (Cf) CoAP framework.
  ******************************************************************************/
 
@@ -43,7 +43,7 @@ import ch.ethz.inf.vs.californium.util.Properties;
 
 /**
  * A factory for creating Communicator objects.
- * 
+ *
  * @author Francesco Corazza
  */
 public final class CommunicatorFactory {
@@ -62,12 +62,16 @@ public final class CommunicatorFactory {
 
 	/**
 	 * Gets the single instance of CommunicatorFactory.
-	 * 
+	 *
 	 * @return single instance of CommunicatorFactory
 	 */
 	public static CommunicatorFactory getInstance() {
 		return CommunicatorFactoryHolder.communicatorFactory;
 	}
+
+        public void destroyCommunicator(){
+                COMMUNICATOR = null;
+        }
 
 	public Communicator getCommunicator() {
 		if (COMMUNICATOR == null) {
@@ -156,7 +160,7 @@ public final class CommunicatorFactory {
 
 	/**
 	 * The Interface Communicator.
-	 * 
+	 *
 	 * @author Francesco Corazza
 	 */
 	public static interface Communicator extends Layer {
@@ -164,27 +168,30 @@ public final class CommunicatorFactory {
 
 		/**
 		 * Gets the port.
-		 * 
+		 *
 		 * @param isHttpPort
 		 *            the is http port
 		 * @return the port
 		 */
 		int getPort(boolean isHttpPort);
+
+                void stop();
 	}
 
 	/**
 	 * The Class CommonCommunicator.
-	 * 
+	 *
 	 * @author Francesco Corazza
 	 */
 	private static class CommonCommunicator extends UpperLayer implements
 			Communicator {
 
 		private final int udpPort;
+                private CoapStack coapStack;
 
 		/**
 		 * Instantiates a new common communicator.
-		 * 
+		 *
 		 * @param udpPort
 		 *            the udp port
 		 * @param runAsDaemon
@@ -199,7 +206,7 @@ public final class CommunicatorFactory {
 		public CommonCommunicator(int udpPort, boolean runAsDaemon, int transferBlockSize, int requestPerSecond, boolean isSecured) throws SocketException {
 			this.udpPort = udpPort;
 
-			CoapStack coapStack = new CoapStack(udpPort, runAsDaemon, transferBlockSize, requestPerSecond, isSecured);
+			coapStack = new CoapStack(udpPort, runAsDaemon, transferBlockSize, requestPerSecond, isSecured);
 			setLowerLayer(coapStack);
 		}
 
@@ -264,11 +271,18 @@ public final class CommunicatorFactory {
 				sendMessageOverLowerLayer(msg);
 			}
 		}
+
+                @Override
+                public void stop() {
+                        LOG.info("!!!!!!!!!!!!!!!!!!!!!!! STOPPING UDP LAYER");
+                        this.coapStack.stop();
+                        this.coapStack = null;
+                }
 	}
 
 	/**
 	 * The Class CommunicatorFactoryHolder.
-	 * 
+	 *
 	 * @author Francesco Corazza
 	 */
 	private static class CommunicatorFactoryHolder {
@@ -277,7 +291,7 @@ public final class CommunicatorFactory {
 
 	/**
 	 * The Class ProxyCommunicator.
-	 * 
+	 *
 	 * @author Francesco Corazza
 	 */
 	private static class ProxyCommunicator extends UpperLayer implements
@@ -290,7 +304,7 @@ public final class CommunicatorFactory {
 
 		/**
 		 * Instantiates a new proxy communicator.
-		 * 
+		 *
 		 * @param udpPort
 		 *            the udp port
 		 * @param httpPort
@@ -399,5 +413,10 @@ public final class CommunicatorFactory {
 				coapStack.sendMessage(message);
 			}
 		}
+
+                @Override
+                public void stop() {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
 	}
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012, Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the Institute nor the names of its contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -25,7 +25,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * This file is part of the Californium (Cf) CoAP framework.
  ******************************************************************************/
 
@@ -45,7 +45,7 @@ import ch.ethz.inf.vs.californium.util.Properties;
  * class is to forward received requests to the corresponding resource specified
  * by the Uri-Path option. Furthermore, it implements the root resource to
  * return a brief server description to GET requests with empty Uri-Path.
- * 
+ *
  * @author Francesco Corazza
  */
 public class ServerEndpoint extends LocalEndpoint {
@@ -54,6 +54,7 @@ public class ServerEndpoint extends LocalEndpoint {
 	private boolean runAsDaemon = false;
 	private int transferBlockSize = 0;
 	private int requestPerSecond = 0;
+        private Communicator communicator;
 
 	public ServerEndpoint() throws SocketException {
 		this(Properties.std.getInt("DEFAULT_PORT"));
@@ -61,7 +62,7 @@ public class ServerEndpoint extends LocalEndpoint {
 
 	/**
 	 * Instantiates a new local endpoint.
-	 * 
+	 *
 	 * @param port
 	 *            the port
 	 * @throws SocketException
@@ -73,7 +74,7 @@ public class ServerEndpoint extends LocalEndpoint {
 
 	/**
 	 * Instantiates a new local endpoint.
-	 * 
+	 *
 	 * @param port
 	 *            the port
 	 * @param transferBlockSize
@@ -89,7 +90,7 @@ public class ServerEndpoint extends LocalEndpoint {
 
 	/**
 	 * Instantiates a new local endpoint.
-	 * 
+	 *
 	 * @param port
 	 *            the port
 	 * @param transferBlockSize
@@ -119,7 +120,7 @@ public class ServerEndpoint extends LocalEndpoint {
 		factory.setRequestPerSecond(requestPerSecond);
 
 		// initialize communicator
-		Communicator communicator = factory.getCommunicator();
+		communicator = factory.getCommunicator();
 
 		// register the endpoint as a receiver
 		communicator.registerReceiver(this);
@@ -129,4 +130,11 @@ public class ServerEndpoint extends LocalEndpoint {
 	protected void responseProduced(Response response) {
 		// do nothing
 	}
+
+        @Override
+        protected void destroyCommunicator() {
+                communicator.unregisterReceiver(this);
+                communicator.stop();
+                CommunicatorFactory.getInstance().destroyCommunicator();
+        }
 }

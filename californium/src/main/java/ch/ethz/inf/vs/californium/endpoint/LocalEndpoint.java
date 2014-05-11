@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012, Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the Institute nor the names of its contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -25,7 +25,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * This file is part of the Californium (Cf) CoAP framework.
  ******************************************************************************/
 
@@ -53,7 +53,7 @@ import ch.ethz.inf.vs.californium.util.Properties;
  * class is to forward received requests to the corresponding resource specified
  * by the Uri-Path option. Furthermore, it implements the root resource to
  * return a brief server description to GET requests with empty Uri-Path.
- * 
+ *
  * @author Dominique Im Obersteg, Daniel Pauli, Matthias Kovatsch and Francesco
  *         Corazza
  */
@@ -84,7 +84,7 @@ public abstract class LocalEndpoint extends Endpoint {
 	/**
 	 * Adds a resource to the root resource of the endpoint. If the resource
 	 * identifier is actually a path, it is split up into multiple resources.
-	 * 
+	 *
 	 * @param resource
 	 *            - the resource to add to the root resource
 	 */
@@ -110,7 +110,7 @@ public abstract class LocalEndpoint extends Endpoint {
 			if (resource != null) {
 
 				request.setResource(resource);
-				
+
 				LOG.info(String.format("Dispatching execution: %s", resourcePath));
 
 				LOG.finer(String.format("Dispatching execution: %s", resourcePath));
@@ -135,7 +135,7 @@ public abstract class LocalEndpoint extends Endpoint {
 							// resource
 							responseProduced(request.getResponse());
 						}
-						
+
 						// send response from this thread
 						request.sendResponse();
 					}
@@ -152,13 +152,13 @@ public abstract class LocalEndpoint extends Endpoint {
 
 				request.respondAndSend(CodeRegistry.RESP_NOT_FOUND);
 			}
-			
+
 		}
 	}
 
 	/**
 	 * Gets the resource.
-	 * 
+	 *
 	 * @param resourcePath
 	 *            the resource path
 	 * @return the resource
@@ -174,7 +174,7 @@ public abstract class LocalEndpoint extends Endpoint {
 	/**
 	 * Provides access to the root resource that contains all local resources,
 	 * e.g., for the surrounding server code to register at an RD.
-	 * 
+	 *
 	 * @return the root resource
 	 */
 	public Resource getRootResource() {
@@ -197,7 +197,7 @@ public abstract class LocalEndpoint extends Endpoint {
 
 	/**
 	 * Removes the resource.
-	 * 
+	 *
 	 * @param resourceIdentifier
 	 *            the resource identifier
 	 */
@@ -207,16 +207,17 @@ public abstract class LocalEndpoint extends Endpoint {
 		}
 	}
 
-	/**
-	 * 
-	 */
 	public void start() {
 		createCommunicator();
 	}
 
+        public void stop() {
+                destroyCommunicator();
+        }
+
 	/**
 	 * Delegates a {@link PUTRequest} for a non-existing resource to the.
-	 * 
+	 *
 	 * @param request
 	 *            - the PUT request
 	 *            {@link LocalResource#createSubResource(Request, String)}
@@ -240,14 +241,15 @@ public abstract class LocalEndpoint extends Endpoint {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	protected abstract void createCommunicator();
+	protected abstract void destroyCommunicator();
 
 	/**
 	 * Method to notify the implementers of this class that a new response has
 	 * been received from a resource.
-	 * 
+	 *
 	 * @param response
 	 */
 	protected abstract void responseProduced(Response response);
@@ -272,7 +274,7 @@ public abstract class LocalEndpoint extends Endpoint {
 		 */
 		@Override
 		public void performGET(GETRequest request) {
-			
+
 			request.respond(CodeRegistry.RESP_CONTENT, ENDPOINT_INFO, MediaTypeRegistry.TEXT_PLAIN);
 		}
 	}

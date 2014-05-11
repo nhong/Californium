@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012, Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the Institute nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -25,7 +25,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * This file is part of the Californium (Cf) CoAP framework.
  ******************************************************************************/
 
@@ -36,14 +36,16 @@ import java.net.SocketException;
 /**
  * The Class CoapStack encapsulate the layers needed to communicate to CoAP
  * nodes. It is used as a black box from the outside.
- * 
+ *
  * @author Francesco Corazza
  */
 public class CoapStack extends UpperLayer {
 
+        UDPLayer udpLayer = null;
+
 	/**
 	 * Instantiates a new coap stack.
-	 * 
+	 *
 	 * @param udpPort
 	 *            the udp port
 	 * @param runAsDaemon
@@ -65,7 +67,7 @@ public class CoapStack extends UpperLayer {
 		// AdverseLayer adverseLayer = new AdverseLayer();
 		// RateControlLayer rateControlLayer = new
 		// RateControlLayer(requestPerSecond);
-		UDPLayer udpLayer = null;
+
 		DTLSLayer dtlsLayer = null;
 		if (isSecured) {
 			dtlsLayer = new DTLSLayer(udpPort, runAsDaemon);
@@ -92,4 +94,9 @@ public class CoapStack extends UpperLayer {
 
 		LOG.info("CoapStack started");
 	}
+
+        public void stop(){
+                LOG.info("STOPPING UDP LAYER");
+                udpLayer.stop();
+        }
 }
